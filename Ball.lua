@@ -21,7 +21,7 @@ end
 
 function Ball:reset()
   self.x = VIRTUAL_WIDTH / 2 -2
-  self.x = VIRTUAL_HEIGHT / 2 -2
+  self.y = VIRTUAL_HEIGHT / 2 -2
   self.dy = 0
   self.dx = 0
 end
