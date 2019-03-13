@@ -40,25 +40,68 @@ end
 
 
 function love.update(dt) 
-  if love.keyboard.isDown('w') then
-    player1.y = math.max(0, player1.y + -PADDLE_SPEED * dt)
-  elseif love.keyboard.isDown('s') then
-    player1.y = math.min(VIRTUAL_HEIGHT - 20, player1.y + PADDLE_SPEED * dt)
-  end
+  if gameState == 'serve' then
+    ball.dy = math.random(-50, 50)
+    if servingPlayer == 1 then
+      ball.dx = math.random(140, 200)
+    else
+      ball.dx = -math.random(140, 200)
+    end
 
-  if love.keyboard.isDown('up') then
-    player2.y = math.max(0, player2.y + -PADDLE_SPEED * dt)
-  elseif love.keyboard.isDown('down') then
-    player2.y = math.min(VIRTUAL_HEIGHT - 20, player2.y + PADDLE_SPEED * dt)
-  end
+  elseif gameState == 'play' then
 
-  if gameState == 'play' then
-    ball:update(dt)
-  end
+    if ball:collides(player1) then
+      ball.dx = -ball.dx * 1.03
+      ball.x = player1.x + 5
 
-  player1:update(dt)
-  player2:update(dt)
-  
+      if ball.dy < 0 then
+        ball.dy = -math.random(10, 150)
+      else
+        ball.dy = math.random(10, 150)
+      end
+    end
+
+    if ball:collides(player2) then
+      ball.dx = -ball.dx * 1.03
+      ball.x = player2.x - 4
+
+      if ball.dy < 0 then
+        ball.dy = -math.random(10, 150)
+      else
+        ball.dy = math.random(10, 150)
+      end
+    end
+
+    if ball.y <= 0 then
+      ball.y = 0
+      ball.dy = -ball.dy
+    end
+
+    if ball.y >= VIRTUAL_HEIGHT -4 then
+      ball.y = VIRTUAL_HEIGHT -4
+      ball.dy = -ball.dy
+    end
+
+    if love.keyboard.isDown('w') then
+      player1.y = math.max(0, player1.y + -PADDLE_SPEED * dt)
+    elseif love.keyboard.isDown('s') then
+      player1.y = math.min(VIRTUAL_HEIGHT - 20, player1.y + PADDLE_SPEED * dt)
+    end
+
+    if love.keyboard.isDown('up') then
+      player2.y = math.max(0, player2.y + -PADDLE_SPEED * dt)
+    elseif love.keyboard.isDown('down') then
+      player2.y = math.min(VIRTUAL_HEIGHT - 20, player2.y + PADDLE_SPEED * dt)
+    end
+
+    if gameState == 'play' then
+      ball:update(dt)
+    end
+
+    player1:update(dt)
+    player2:update(dt)
+    
+  end
 end
 
 function love.keypressed(key)
@@ -90,6 +133,14 @@ function love.draw()
   player2:render()
   ball:render()
 
+  displayFPS()
+
   push:apply('end')
 
+end
+
+function displayFPS()
+  love.graphics.setFont(smallFont)
+  love.graphics.setColor(255,255,255,100 )
+  love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10)
 end
